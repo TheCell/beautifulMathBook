@@ -1,4 +1,3 @@
-ChildApplet optionsWindow;
 Options options;
 PVector windowSize;
 PVector imageSize;
@@ -19,9 +18,11 @@ void setup()
   graphic = createGraphics((int)imageSize.x, (int)imageSize.y);
   frameRate(30);
   options = new Options();
-  optionsWindow = new ChildApplet(options);
   
-  options.exampleBool = true;
+  println(
+    "For interesting variables use the Options class, so people know where to tweak values, ex: "
+    + options.exampleBool
+  );
 }
 
 void mousePressed()
