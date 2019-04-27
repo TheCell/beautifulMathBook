@@ -8,10 +8,10 @@ class Options
   
   public Options()
   {
-    colors[0] = color(#564592);
-    colors[1] = color(#724cf9);
-    colors[2] = color(#ca7df9);
-    colors[3] = color(#f896d8);
-    colors[4] = color(#edf67d);
+    colors[0] = color(#efe9e7);
+    colors[1] = color(#dae0f2);
+    colors[2] = color(#fb8b24);
+    colors[3] = color(#e36414);
+    colors[4] = color(#231f20);
   }
 }
