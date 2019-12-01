@@ -54,16 +54,28 @@ class PoissonDiscSampling
     {
       if (activeList.size() > 0)
       {
+        float epsilon = 0.0000001f;
+        double seed = Math.random();
+        
         int randomIndex = (int) random(0, activeList.size());
         PVector activePosition = activeList.get(randomIndex);
-        boolean found = false;
         
         for (int i = 0; i < constantK; i++)
         {
+          // original
           PVector samplePos = PVector.random2D();
           float distance = random(distanceR, distanceR * 2);
           samplePos.setMag(distance);
           samplePos.add(activePosition);
+          
+          // extreamlearning
+          /*
+          double theta = (seed + i/constantK);
+          double r = distanceR + epsilon;
+          double newX = activePosition.x + r * Math.cos(theta);
+          double newY = activePosition.y + r * Math.sin(theta);
+          samplePos = new PVector((float) newX, (float) newY);
+          */
           
           int columnPos = (int) (samplePos.x / cellSize);
           int rowPos = (int) (samplePos.y / cellSize);
@@ -102,7 +114,6 @@ class PoissonDiscSampling
           
           if (isOk)
           {
-            found = true;
             grid[columnPos + rowPos * cols] = samplePos;
             activeList.add(samplePos);
           }
@@ -124,7 +135,13 @@ class PoissonDiscSampling
       PVector gridInfo = grid[i];
       if (gridInfo.mag() > 0)
       {
-        image.arc( i % cols * cellSize, i / rows * cellSize, cellSize, cellSize, 0, TWO_PI);
+        image.arc(
+          i % cols * cellSize - cellSize / 2,
+          i / rows * cellSize - cellSize / 2,
+          cellSize,
+          cellSize,
+          0,
+          TWO_PI);
         //println("drawing circle at x " + i % cols * cellSize + " and y " + i / rows * cellSize);
         //image.pixels[ (int) (i * cellSize * cellSize)] = color(255,255,255);
       }
