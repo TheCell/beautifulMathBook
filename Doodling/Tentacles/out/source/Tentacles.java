@@ -23,6 +23,7 @@ public void setup()
 	noStroke();
 	
 }
+
 public void draw()
 {
 	clear();
@@ -41,6 +42,18 @@ public void draw()
 				d*9
 			);
 		}
+	}
+}
+
+public void keyPressed()
+{
+	// println(keyCode);
+	if (keyCode == 32)
+	{
+		println("taking screenshot");
+		String timeString = ""  + java.time.LocalDate.now() + "_" + java.time.LocalTime.now();
+		timeString = timeString.replace(":", ".");
+		saveFrame(timeString + "_Sketch.jpg");
 	}
 }
   public void settings() { 	size(720,720); 	pixelDensity(displayDensity()); }

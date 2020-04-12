@@ -7,6 +7,7 @@ void setup()
 	noStroke();
 	pixelDensity(displayDensity());
 }
+
 void draw()
 {
 	clear();
@@ -25,5 +26,16 @@ void draw()
 				d*9
 			);
 		}
+	}
+}
+
+void keyPressed()
+{
+	if (keyCode == 32) // space key
+	{
+		println("taking screenshot");
+		String timeString = ""  + java.time.LocalDate.now() + "_" + java.time.LocalTime.now();
+		timeString = timeString.replace(":", ".");
+		saveFrame(timeString + "_Sketch.jpg");
 	}
 }
