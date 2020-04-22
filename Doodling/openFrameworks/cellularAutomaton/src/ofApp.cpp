@@ -4,12 +4,15 @@ ofImage imageToDraw;
 int reduceFactor = 1; // 1,2,4,etc.
 int width = 1024 / reduceFactor;
 int height = 768 / reduceFactor;
+int *caRuleOutput = new int[8];
 int *caCells = new int[width];
 int currentLineToDraw = 0;
 bool randomStart = false;
+bool randomSeed = false;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+	setRule(randomSeed);
 	fillCells();
 	imageToDraw.allocate(width, height, OF_IMAGE_COLOR);
 	imageToDraw.setColor(ofColor::white);
@@ -19,6 +22,7 @@ void ofApp::setup(){
 	gui->addTextInput("message", "Cellular Automaton by TheCell");
 
 	gui->addToggle("Random Start", randomStart);
+	gui->addToggle("Random Seed", randomSeed);
 	gui->onToggleEvent(this, &ofApp::onToggleEvent);
 }
 
@@ -27,6 +31,12 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
 	if (e.target->is("Random Start"))
 	{
 		randomStart = !randomStart;
+		reset();
+	}
+	else if (e.target->is("Random Seed"))
+	{
+		randomSeed = !randomSeed;
+		setRule(randomSeed);
 		reset();
 	}
 }
@@ -133,35 +143,37 @@ void ofApp::updateCA()
 		}
 		centerCell = caCells[i];
 
-		bool isAlive = false;
-		if (leftCell && centerCell && !rightCell)
+		if (leftCell && centerCell && rightCell)
 		{
-			isAlive = true;
+			tempArr[i] = caRuleOutput[0];
+		}
+		else if (leftCell && centerCell && !rightCell)
+		{
+			tempArr[i] = caRuleOutput[1];
 		}
 		else if (leftCell && !centerCell && rightCell)
 		{
-			isAlive = true;
+			tempArr[i] = caRuleOutput[2];
+		}
+		else if (leftCell && !centerCell && !rightCell)
+		{
+			tempArr[i] = caRuleOutput[3];
 		}
 		else if (!leftCell && centerCell && rightCell)
 		{
-			isAlive = true;
+			tempArr[i] = caRuleOutput[4];
 		}
 		else if (!leftCell && centerCell && !rightCell)
 		{
-			isAlive = true;
+			tempArr[i] = caRuleOutput[5];
 		}
 		else if (!leftCell && !centerCell && rightCell)
 		{
-			isAlive = true;
+			tempArr[i] = caRuleOutput[6];
 		}
-
-		if (isAlive)
+		else if (!leftCell && !centerCell && !rightCell)
 		{
-			tempArr[i] = 1;
-		}
-		else
-		{
-			tempArr[i] = 0;
+			tempArr[i] = caRuleOutput[7];
 		}
 	}
 	for (int i = 0; i < width; i++)
@@ -213,4 +225,26 @@ void ofApp::reset()
 	imageToDraw.setColor(ofColor::white);
 	currentLineToDraw = 0;
 	fillCells();
+}
+
+void ofApp::setRule(bool random)
+{
+	if (random)
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			caRuleOutput[i] = (int)ofRandom(0, 2);
+		}
+	}
+	else
+	{
+		caRuleOutput[0] = 0;
+		caRuleOutput[1] = 0;
+		caRuleOutput[2] = 0;
+		caRuleOutput[3] = 1;
+		caRuleOutput[4] = 1;
+		caRuleOutput[5] = 1;
+		caRuleOutput[6] = 1;
+		caRuleOutput[7] = 0;
+	}
 }

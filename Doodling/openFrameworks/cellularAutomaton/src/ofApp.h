@@ -25,6 +25,7 @@ class ofApp : public ofBaseApp{
 		void updateImage();
 		void fillCells();
 		void reset();
+		void setRule(bool random);
 
 		ofxDatGui* gui;
 		void onToggleEvent(ofxDatGuiToggleEvent e);
