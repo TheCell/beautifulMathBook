@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxDatGui.h"
 
 class ofApp : public ofBaseApp{
 
@@ -23,4 +24,8 @@ class ofApp : public ofBaseApp{
 		void updateCA();
 		void updateImage();
 		void fillCells();
+		void reset();
+
+		ofxDatGui* gui;
+		void onToggleEvent(ofxDatGuiToggleEvent e);
 };

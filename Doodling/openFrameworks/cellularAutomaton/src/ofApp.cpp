@@ -6,19 +6,34 @@ int width = 1024 / reduceFactor;
 int height = 768 / reduceFactor;
 int *caCells = new int[width];
 int currentLineToDraw = 0;
+bool randomStart = false;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
 	fillCells();
-	caCells[width / 2] = 1;
 	imageToDraw.allocate(width, height, OF_IMAGE_COLOR);
 	imageToDraw.setColor(ofColor::white);
 	imageToDraw.update();
+
+	gui = new ofxDatGui(ofxDatGuiAnchor::TOP_RIGHT);
+	gui->addTextInput("message", "Cellular Automaton by TheCell");
+
+	gui->addToggle("Random Start", randomStart);
+	gui->onToggleEvent(this, &ofApp::onToggleEvent);
+}
+
+void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
+{
+	if (e.target->is("Random Start"))
+	{
+		randomStart = !randomStart;
+		reset();
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	
+
 }
 
 //--------------------------------------------------------------
@@ -36,8 +51,11 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 	if (key == 'x') {
+		gui->setVisible(false);
+		imageToDraw.draw(0, 0, width * reduceFactor, height * reduceFactor);
 		imageToDraw.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
-		imageToDraw.save("screenshot.png");
+		imageToDraw.save("screenshot" + ofGetTimestampString() + ".png");
+		gui->setVisible(true);
 	}
 }
 
@@ -175,6 +193,24 @@ void ofApp::fillCells()
 {
 	for (int i = 0; i < width; i++)
 	{
-		caCells[i] = 0;
+		if (randomStart)
+		{
+			caCells[i] = (int) ofRandom(0,2);
+		}
+		else
+		{
+			caCells[i] = 0;
+		}
 	}
+	if (!randomStart)
+	{
+		caCells[width / 2] = 1;
+	}
+}
+
+void ofApp::reset()
+{
+	imageToDraw.setColor(ofColor::white);
+	currentLineToDraw = 0;
+	fillCells();
 }
