@@ -22,7 +22,8 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
-		void fillWithShapes(ofColor color);
+		void fillWithCircles(ofColor color);
+		void fillWithQuads(ofColor color);
 		void fillWithBackground(ofColor color, float xOffsetpercent, float yOffsetpercent, float rotateDegree);
 		ofImage img;
 		ofxDatGui* gui;

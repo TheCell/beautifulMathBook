@@ -3,6 +3,7 @@
 int width = 1024;
 int height = 768;
 int griditems = 5;
+float shadowOffset = 0.04;
 ofColor color1;
 ofColor color2;
 ofColor color3;
@@ -15,9 +16,9 @@ void ofApp::setup(){
 	color3 = ofColor(3, 142, 204);
 	color4 = ofColor(245, 239, 101);
 
-	img.allocate(width, height, OF_IMAGE_COLOR);
+	/*img.allocate(width, height, OF_IMAGE_COLOR);
 	img.setColor(ofColor::white);
-	img.update();
+	img.update();*/
 	gui = new ofxDatGui(ofxDatGuiAnchor::TOP_RIGHT);
 	gui->addTextInput("message", "Tiled Circles by TheCell");
 }
@@ -32,6 +33,7 @@ void ofApp::draw(){
 	/*img.setColor(ofColor::white);
 	img.update();
 	img.draw(0, 0);*/
+	//img.setColor(ofColor::white);
 	ofBackground(ofColor::white);
 	fillWithBackground(ofColor(0, 255), 0.3, .1, 110);
 	fillWithBackground(ofColor(0, 255), 0.7, .1, 20);
@@ -67,7 +69,8 @@ void ofApp::draw(){
 	fillWithBackground(ofColor(0, 255), .25, .75, 45);
 	fillWithBackground(ofColor(0, 255), .5, .75, 75);
 	fillWithBackground(ofColor(0, 255), .75, .75, 90);*/
-	fillWithShapes(color1);
+	fillWithCircles(color1);
+	fillWithQuads(color4);
 }
 
 //--------------------------------------------------------------
@@ -77,6 +80,7 @@ void ofApp::keyPressed(int key)
 	{
 		gui->setVisible(false);
 		//img.draw(0, 0, width, height);
+		this->draw();
 		img.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
 		img.save("screenshot" + ofGetTimestampString() + ".png");
 		gui->setVisible(true);
@@ -133,7 +137,7 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }
 
-void ofApp::fillWithShapes(ofColor color)
+void ofApp::fillWithCircles(ofColor color)
 {
 	int widthSpace = width / (griditems + 1);
 	int heightSpace = height / (griditems + 1);
@@ -141,8 +145,31 @@ void ofApp::fillWithShapes(ofColor color)
 	{
 		for (int x = 0; x < griditems; x++)
 		{
+			ofSetColor(ofColor::black);
+			ofDrawCircle(widthSpace + widthSpace * shadowOffset + x * widthSpace, heightSpace + heightSpace * shadowOffset + y * heightSpace, widthSpace / 8);
 			ofSetColor(color);
 			ofDrawCircle(widthSpace + x * widthSpace, heightSpace + y * heightSpace, widthSpace / 8);
+		}
+	}
+}
+
+void ofApp::fillWithQuads(ofColor color)
+{
+	int widthSpace = width / (griditems + 1);
+	int heightSpace = height / (griditems + 1);
+
+	float shadowwidthoffset = widthSpace * shadowOffset;
+	float shadowheightoffset = heightSpace * shadowOffset;
+	float xOffset = widthSpace * -0.3;
+	float yOffset = heightSpace * 0.3;
+	for (int y = 0; y < griditems; y++)
+	{
+		for (int x = 0; x < griditems; x++)
+		{
+			ofSetColor(ofColor::black);
+			ofDrawRectangle(widthSpace + shadowwidthoffset + x * widthSpace + xOffset, heightSpace + shadowheightoffset + y * heightSpace + yOffset, widthSpace / 4, widthSpace / 4);
+			ofSetColor(color);
+			ofDrawRectangle(widthSpace + x * widthSpace + xOffset, heightSpace + y * heightSpace + yOffset, widthSpace / 4, widthSpace / 4);
 		}
 	}
 }
