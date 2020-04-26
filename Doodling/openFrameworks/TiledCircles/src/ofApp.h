@@ -24,6 +24,7 @@ class ofApp : public ofBaseApp{
 		
 		void fillWithCircles(ofColor color);
 		void fillWithQuads(ofColor color);
+		void fillWithLines(ofColor color);
 		void fillWithBackground(ofColor color, float xOffsetpercent, float yOffsetpercent, float rotateDegree);
 		ofImage img;
 		ofxDatGui* gui;

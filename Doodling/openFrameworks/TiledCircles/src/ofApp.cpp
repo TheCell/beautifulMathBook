@@ -71,6 +71,7 @@ void ofApp::draw(){
 	fillWithBackground(ofColor(0, 255), .75, .75, 90);*/
 	fillWithCircles(color1);
 	fillWithQuads(color4);
+	fillWithLines(color2);
 }
 
 //--------------------------------------------------------------
@@ -141,14 +142,17 @@ void ofApp::fillWithCircles(ofColor color)
 {
 	int widthSpace = width / (griditems + 1);
 	int heightSpace = height / (griditems + 1);
-	for (int y = 0; y < griditems; y++)
+	float offset;
+
+	for (int y = -1; y < griditems + 2; y++)
 	{
-		for (int x = 0; x < griditems; x++)
+		offset = widthSpace * -0.3 * y;
+		for (int x = -1; x < griditems + 2; x++)
 		{
 			ofSetColor(ofColor::black);
-			ofDrawCircle(widthSpace + widthSpace * shadowOffset + x * widthSpace, heightSpace + heightSpace * shadowOffset + y * heightSpace, widthSpace / 8);
+			ofDrawCircle(widthSpace + widthSpace * shadowOffset + x * widthSpace + offset, heightSpace + heightSpace * shadowOffset + y * heightSpace, widthSpace / 12);
 			ofSetColor(color);
-			ofDrawCircle(widthSpace + x * widthSpace, heightSpace + y * heightSpace, widthSpace / 8);
+			ofDrawCircle(widthSpace + x * widthSpace + offset, heightSpace + y * heightSpace, widthSpace / 12);
 		}
 	}
 }
@@ -160,16 +164,47 @@ void ofApp::fillWithQuads(ofColor color)
 
 	float shadowwidthoffset = widthSpace * shadowOffset;
 	float shadowheightoffset = heightSpace * shadowOffset;
-	float xOffset = widthSpace * -0.3;
-	float yOffset = heightSpace * 0.3;
-	for (int y = 0; y < griditems; y++)
+	float xOffset;
+	float yOffset = heightSpace * 0.4;
+	for (int y = -1; y < griditems + 2; y++)
 	{
-		for (int x = 0; x < griditems; x++)
+		xOffset = widthSpace * -0.3 * y;
+
+		for (int x = -1; x < griditems + 2; x++)
 		{
 			ofSetColor(ofColor::black);
-			ofDrawRectangle(widthSpace + shadowwidthoffset + x * widthSpace + xOffset, heightSpace + shadowheightoffset + y * heightSpace + yOffset, widthSpace / 4, widthSpace / 4);
+			ofDrawRectangle(widthSpace + shadowwidthoffset + x * widthSpace + xOffset, heightSpace + shadowheightoffset + y * heightSpace + yOffset, widthSpace / 6, widthSpace / 6);
 			ofSetColor(color);
-			ofDrawRectangle(widthSpace + x * widthSpace + xOffset, heightSpace + y * heightSpace + yOffset, widthSpace / 4, widthSpace / 4);
+			ofDrawRectangle(widthSpace + x * widthSpace + xOffset, heightSpace + y * heightSpace + yOffset, widthSpace / 6, widthSpace / 6);
+		}
+	}
+}
+
+void ofApp::fillWithLines(ofColor color)
+{
+	int widthSpace = width / (griditems + 1);
+	int heightSpace = height / (griditems + 1);
+
+	float shadowwidthoffset = widthSpace * shadowOffset;
+	float shadowheightoffset = heightSpace * shadowOffset;
+	float xOffset;
+	float yOffset = heightSpace * 0.8;
+	for (int y = -1; y < griditems + 2; y++)
+	{
+		xOffset = widthSpace * -0.3 * y + widthSpace * -0.7;
+		for (int x = -1; x < griditems + 2; x++)
+		{
+			ofPushMatrix();
+			ofTranslate(widthSpace + shadowwidthoffset + x * widthSpace + xOffset, heightSpace + shadowheightoffset + y * heightSpace + yOffset);
+			ofRotate(-35);
+			ofSetColor(ofColor::black);
+			ofDrawRectangle(0, 0, widthSpace / 1.6, widthSpace / 12);
+			ofRotate(35);
+			ofSetColor(color);
+			ofTranslate(-shadowwidthoffset, -shadowheightoffset);
+			ofRotate(-35);
+			ofDrawRectangle(0, 0, widthSpace / 1.6, widthSpace / 12);
+			ofPopMatrix();
 		}
 	}
 }
