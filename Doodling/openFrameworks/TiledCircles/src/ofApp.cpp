@@ -72,6 +72,7 @@ void ofApp::draw(){
 	fillWithCircles(color1);
 	fillWithQuads(color4);
 	fillWithLines(color2);
+	fillWithSprings(color3);
 }
 
 //--------------------------------------------------------------
@@ -209,13 +210,61 @@ void ofApp::fillWithLines(ofColor color)
 	}
 }
 
+void ofApp::fillWithSprings(ofColor color)
+{
+	int widthSpace = width / (griditems + 1);
+	int heightSpace = height / (griditems + 1);
+
+	float shadowwidthoffset = widthSpace * shadowOffset;
+	float shadowheightoffset = heightSpace * shadowOffset;
+	float xOffset;
+	float yOffset = heightSpace * 0.1;
+	float rotateDegree = 35;
+	for (int y = -1; y < griditems + 2; y++)
+	{
+		xOffset = widthSpace * -0.3 * y + widthSpace * -0.6;
+		for (int x = -1; x < griditems + 2; x++)
+		{
+			ofPushMatrix();
+			ofTranslate(widthSpace + shadowwidthoffset + x * widthSpace + xOffset, heightSpace + shadowheightoffset + y * heightSpace + yOffset);
+			ofRotate(rotateDegree);
+			ofSetColor(ofColor::black);
+			ofSetLineWidth(widthSpace / 16);
+			std::vector <ofPolyline> polyline;
+			polyline.push_back(ofPolyline());
+			polyline.back().addVertex(-widthSpace / 4, -heightSpace / 8);
+			polyline.back().addVertex(-widthSpace / 8, heightSpace / 8);
+			polyline.back().addVertex(0, -heightSpace / 8);
+			polyline.back().addVertex(widthSpace / 8, heightSpace / 8);
+			polyline.back().addVertex(widthSpace / 4, -heightSpace / 8);
+			
+			for (auto & line : polyline)
+			{
+				line.draw();
+			}
+			ofRotate(-rotateDegree);
+			ofSetColor(color);
+			ofTranslate(-shadowwidthoffset, -shadowheightoffset);
+			ofRotate(rotateDegree);
+
+			for (auto & line : polyline)
+			{
+				line.draw();
+			}
+			//ofDrawRectangle(0, 0, widthSpace / 1.6, widthSpace / 12);
+			ofPopMatrix();
+		}
+	}
+}
+
 void ofApp::fillWithBackground(ofColor color, float xOffsetpercent, float yOffsetpercent, float rotateDegree)
 {
-	int widthSpace = width / (griditems * 2 + 1);
-	int heightSpace = height / (griditems * 2 + 1);
-	for (int y = 0; y < griditems * 2 + 2; y++)
+	int scaleFactor = 3;
+	int widthSpace = width / (griditems * scaleFactor + 1);
+	int heightSpace = height / (griditems * scaleFactor + 1);
+	for (int y = 0; y < griditems * scaleFactor + 2; y++)
 	{
-		for (int x = 0; x < griditems * 2 + 2; x++)
+		for (int x = 0; x < griditems * scaleFactor + 2; x++)
 		{
 			ofPushMatrix();
 			ofTranslate(x * widthSpace + widthSpace * xOffsetpercent, y * heightSpace + heightSpace * yOffsetpercent);
