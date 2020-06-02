@@ -4,6 +4,9 @@ int width = 1024;
 int height = 768;
 int griditems = 5;
 float shadowOffset = 0.04;
+int globalXOffset = 0;
+int globalYOffset = 0;
+
 ofColor color1;
 ofColor color2;
 ofColor color3;
@@ -24,8 +27,18 @@ void ofApp::setup(){
 }
 
 //--------------------------------------------------------------
-void ofApp::update(){
-
+void ofApp::update()
+{
+	globalXOffset++;
+	globalYOffset++;
+	if (globalXOffset > width / (griditems + 1))
+	{
+		globalXOffset = 0;
+	}
+	if (globalYOffset > height / (griditems + 1))
+	{
+		globalYOffset = 0;
+	}
 }
 
 //--------------------------------------------------------------
@@ -145,6 +158,8 @@ void ofApp::fillWithCircles(ofColor color)
 	int heightSpace = height / (griditems + 1);
 	float offset;
 
+	ofPushMatrix();
+	ofTranslate(globalXOffset, globalYOffset);
 	for (int y = -1; y < griditems + 2; y++)
 	{
 		offset = widthSpace * -0.3 * y;
@@ -156,6 +171,7 @@ void ofApp::fillWithCircles(ofColor color)
 			ofDrawCircle(widthSpace + x * widthSpace + offset, heightSpace + y * heightSpace, widthSpace / 12);
 		}
 	}
+	ofPopMatrix();
 }
 
 void ofApp::fillWithQuads(ofColor color)
@@ -167,6 +183,9 @@ void ofApp::fillWithQuads(ofColor color)
 	float shadowheightoffset = heightSpace * shadowOffset;
 	float xOffset;
 	float yOffset = heightSpace * 0.4;
+
+	ofPushMatrix();
+	ofTranslate(globalXOffset, globalYOffset);
 	for (int y = -1; y < griditems + 2; y++)
 	{
 		xOffset = widthSpace * -0.3 * y;
@@ -179,6 +198,7 @@ void ofApp::fillWithQuads(ofColor color)
 			ofDrawRectangle(widthSpace + x * widthSpace + xOffset, heightSpace + y * heightSpace + yOffset, widthSpace / 6, widthSpace / 6);
 		}
 	}
+	ofPopMatrix();
 }
 
 void ofApp::fillWithLines(ofColor color)
@@ -190,6 +210,9 @@ void ofApp::fillWithLines(ofColor color)
 	float shadowheightoffset = heightSpace * shadowOffset;
 	float xOffset;
 	float yOffset = heightSpace * 0.8;
+
+	ofPushMatrix();
+	ofTranslate(globalXOffset, globalYOffset);
 	for (int y = -1; y < griditems + 2; y++)
 	{
 		xOffset = widthSpace * -0.3 * y + widthSpace * -0.7;
@@ -197,17 +220,18 @@ void ofApp::fillWithLines(ofColor color)
 		{
 			ofPushMatrix();
 			ofTranslate(widthSpace + shadowwidthoffset + x * widthSpace + xOffset, heightSpace + shadowheightoffset + y * heightSpace + yOffset);
-			ofRotate(-35);
+			ofRotateDeg(-35);
 			ofSetColor(ofColor::black);
 			ofDrawRectangle(0, 0, widthSpace / 1.6, widthSpace / 12);
-			ofRotate(35);
+			ofRotateDeg(35);
 			ofSetColor(color);
 			ofTranslate(-shadowwidthoffset, -shadowheightoffset);
-			ofRotate(-35);
+			ofRotateDeg(-35);
 			ofDrawRectangle(0, 0, widthSpace / 1.6, widthSpace / 12);
 			ofPopMatrix();
 		}
 	}
+	ofPopMatrix();
 }
 
 void ofApp::fillWithSprings(ofColor color)
@@ -220,6 +244,9 @@ void ofApp::fillWithSprings(ofColor color)
 	float xOffset;
 	float yOffset = heightSpace * 0.1;
 	float rotateDegree = 35;
+
+	ofPushMatrix();
+	ofTranslate(globalXOffset, globalYOffset);
 	for (int y = -1; y < griditems + 2; y++)
 	{
 		xOffset = widthSpace * -0.3 * y + widthSpace * -0.6;
@@ -227,7 +254,7 @@ void ofApp::fillWithSprings(ofColor color)
 		{
 			ofPushMatrix();
 			ofTranslate(widthSpace + shadowwidthoffset + x * widthSpace + xOffset, heightSpace + shadowheightoffset + y * heightSpace + yOffset);
-			ofRotate(rotateDegree);
+			ofRotateDeg(rotateDegree);
 			ofSetColor(ofColor::black);
 			ofSetLineWidth(widthSpace / 16);
 			std::vector <ofPolyline> polyline;
@@ -242,10 +269,10 @@ void ofApp::fillWithSprings(ofColor color)
 			{
 				line.draw();
 			}
-			ofRotate(-rotateDegree);
+			ofRotateDeg(-rotateDegree);
 			ofSetColor(color);
 			ofTranslate(-shadowwidthoffset, -shadowheightoffset);
-			ofRotate(rotateDegree);
+			ofRotateDeg(rotateDegree);
 
 			for (auto & line : polyline)
 			{
@@ -255,6 +282,7 @@ void ofApp::fillWithSprings(ofColor color)
 			ofPopMatrix();
 		}
 	}
+	ofPopMatrix();
 }
 
 void ofApp::fillWithBackground(ofColor color, float xOffsetpercent, float yOffsetpercent, float rotateDegree)
@@ -262,16 +290,20 @@ void ofApp::fillWithBackground(ofColor color, float xOffsetpercent, float yOffse
 	int scaleFactor = 3;
 	int widthSpace = width / (griditems * scaleFactor + 1);
 	int heightSpace = height / (griditems * scaleFactor + 1);
+
+	ofPushMatrix();
+	ofTranslate(globalXOffset, globalYOffset);
 	for (int y = 0; y < griditems * scaleFactor + 2; y++)
 	{
 		for (int x = 0; x < griditems * scaleFactor + 2; x++)
 		{
 			ofPushMatrix();
 			ofTranslate(x * widthSpace + widthSpace * xOffsetpercent, y * heightSpace + heightSpace * yOffsetpercent);
-			ofRotate(rotateDegree);
+			ofRotateDeg(rotateDegree);
 			ofSetColor(color);
 			ofDrawRectangle(-widthSpace / 8, -widthSpace / 16, widthSpace / 8, widthSpace / 16);
 			ofPopMatrix();
 		}
 	}
+	ofPopMatrix();
 }
