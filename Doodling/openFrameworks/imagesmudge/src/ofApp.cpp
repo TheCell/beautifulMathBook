@@ -2,7 +2,8 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-
+	gui = new ofxDatGui(ofxDatGuiAnchor::TOP_RIGHT);
+	gui->addTextInput("message", "Tiled Circles by TheCell");
 }
 
 //--------------------------------------------------------------
