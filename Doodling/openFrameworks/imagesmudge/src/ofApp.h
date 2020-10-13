@@ -21,6 +21,13 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		ofImage img;
+		void onImageResize(ofxDatGuiSliderEvent e);
+		void smudgeImage();
 		ofxDatGui* gui;
+
+		ofImage image;
+		ofxDatGuiSlider* imageScaler;
+		float resizeScale = 1;
+		float originalImageWidth;
+		float originalImageHeight;
 };
