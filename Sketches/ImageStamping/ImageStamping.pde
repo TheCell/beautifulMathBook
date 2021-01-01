@@ -1,4 +1,6 @@
 import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
 
 Options options;
 PVector windowSize;
@@ -49,7 +51,7 @@ void draw()
   image(graphic, 0, 0, windowSize.x, windowSize.y);  
   //shape(hexagon, 25, 25);
   image(photo, 0, 0);
-  background(128,200,30);
+  background(255);
   PGraphics mask = createMask();
   maskedPhoto.mask(mask.get());
   image(photo, 0, 0);
@@ -57,22 +59,6 @@ void draw()
   PGraphics miniImage = stitchedImage(maskedPhoto);
   image(miniImage, photo.width + maskedPhoto.width, 0);
   displayStamps();
-}
-
-void prepareHexagon()
-{
-  hexagon = createShape();
-  hexagon.beginShape();
-  hexagon.noStroke();
-  hexagon.fill(255);
-  hexagon.vertex(options.stampScale * 0, options.stampScale * -5);
-  hexagon.vertex(options.stampScale * -4.3, options.stampScale * -2.5);
-  hexagon.vertex(options.stampScale * -4.3, options.stampScale * 2.5);
-  hexagon.vertex(options.stampScale * 0, options.stampScale * 5);
-  hexagon.vertex(options.stampScale * 4.3, options.stampScale * 2.5);
-  hexagon.vertex(options.stampScale * 4.3, options.stampScale * -2.5);
-  hexagon.vertex(options.stampScale * 0, options.stampScale * -5);
-  hexagon.endShape(CLOSE);
 }
 
 void prepareStampList(int stampCount)
@@ -106,8 +92,9 @@ PVector[] getHexagonPositions(PVector centralPoint)
   {
     // sixPoints[i] = new PVector(centralPoint.x, centralPoint.y + options.hexagonDistance).rotate(degree);
     sixPoints[i] = new PVector(0, options.hexagonDistance).rotate(radians);
-    sixPoints[i].x = sixPoints[i].x + centralPoint.x;
-    sixPoints[i].y = sixPoints[i].y + centralPoint.y;
+    // round to 3 decimal places to make sure we have "unique" vectors
+    sixPoints[i].x = (float) round((sixPoints[i].x + centralPoint.x) * 1000f) / 1000f;
+    sixPoints[i].y = (float) round((sixPoints[i].y + centralPoint.y) * 1000f) / 1000f;
     // println(sixPoints[i].x, sixPoints[i].y, radians);
     radians += PI / 3;
   }
@@ -147,38 +134,27 @@ PGraphics stitchedImage(PImage cutMask)
   int imgSize = (int) (options.stampCount * options.stampScale * 10);
   PGraphics stitchedImage = createGraphics(imgSize, imgSize);
   float hexagonWidth = options.stampScale * 5 * 2;
-  float hexagonHeight = options.stampScale * 4.3 * 2;
+  float hexagonHeight = options.stampScale * 5 * 2;
   
   PVector[] stamps = new PVector[stampPositions.size()];
   PVector[] stichStampPositions = getStitchedHexagonPositions();
   stamps = stampPositions.toArray(stamps);
+  Arrays.sort(stamps, VEC_CMP);
+  stitchedImage.beginDraw();
   for (int i = 0; i < stamps.length; i++)
   {
-    println(stichStampPositions[i]);
-    println(stamps[i]);
-    println(cutMask);
-    println(stitchedImage);
-    println((int) (stamps[i].x - hexagonWidth / 2));
-    println((int) (stamps[i].y - hexagonHeight / 2));
-    println((int) hexagonWidth);
-    println((int) hexagonHeight);
-    println((int) stichStampPositions[i].x);
-    println((int) stichStampPositions[i].y);
-    println((int) hexagonWidth);
-    println((int) hexagonHeight);
-    println(cutMask.width);
-    println(cutMask.height);
     stitchedImage.copy( //<>//
     cutMask,
     (int) (stamps[i].x - hexagonWidth / 2),
     (int) (stamps[i].y - hexagonHeight / 2), 
-    (int) hexagonWidth,
-    (int) hexagonHeight,
+    (int) (hexagonWidth),
+    (int) (hexagonHeight),
     (int) stichStampPositions[i].x,
     (int) stichStampPositions[i].y,
     (int) hexagonWidth,
     (int) hexagonHeight);
   }
+  stitchedImage.endDraw();
   
   return stitchedImage;
 }
@@ -189,14 +165,64 @@ PVector[] getStitchedHexagonPositions()
   float hexagonHeight = options.stampScale * 4.3 * 2;
   
   PVector[] stitchedHexagons = new PVector[stampPositions.size()];
+  boolean oddLine = false;
+  float previousY = 0f;
   stitchedHexagons = stampPositions.toArray(stitchedHexagons);
+  Arrays.sort(stitchedHexagons, VEC_CMP);
   for (int i = 0; i < stampPositions.size(); i++)
   {
+    if (previousY != stitchedHexagons[i].y)
+    {
+      previousY = stitchedHexagons[i].y;
+      oddLine = !oddLine;
+    }
+    
+    /*
     PVector stitchPos = new PVector(
       stitchedHexagons[i].x - hexagonWidth / 2,
       stitchedHexagons[i].y - hexagonHeight / 2);
-    stitchedHexagons[i] = stitchPos; 
+    */
+    if (oddLine)
+    {
+      PVector stitchPos = new PVector(
+      (float) round((stitchedHexagons[i].x / options.hexagonDistance * hexagonWidth) * 1000f) / 1000f,
+      (float) round((stitchedHexagons[i].y / options.hexagonDistance * hexagonHeight) * 1000f) / 1000f - hexagonHeight / 2);
+      stitchedHexagons[i] = stitchPos;
+    }
+    else
+    {
+      PVector stitchPos = new PVector(
+      (float) round((stitchedHexagons[i].x / options.hexagonDistance * hexagonWidth) * 1000f) / 1000f - hexagonWidth / 2,
+      (float) round((stitchedHexagons[i].y / options.hexagonDistance * hexagonHeight) * 1000f) / 1000f - hexagonHeight / 2);
+      stitchedHexagons[i] = stitchPos;
+    } 
   }
   
   return stitchedHexagons;
 }
+
+void prepareHexagon()
+{
+  hexagon = createShape();
+  hexagon.beginShape();
+  hexagon.noStroke();
+  hexagon.fill(255);
+  hexagon.vertex(options.stampScale * 0, options.stampScale * -5);
+  hexagon.vertex(options.stampScale * -4.3, options.stampScale * -2.5);
+  hexagon.vertex(options.stampScale * -4.3, options.stampScale * 2.5);
+  hexagon.vertex(options.stampScale * 0, options.stampScale * 5);
+  hexagon.vertex(options.stampScale * 4.3, options.stampScale * 2.5);
+  hexagon.vertex(options.stampScale * 4.3, options.stampScale * -2.5);
+  hexagon.vertex(options.stampScale * 0, options.stampScale * -5);
+  hexagon.endShape(CLOSE);
+}
+
+static final Comparator<PVector> VEC_CMP = new Comparator<PVector>() {
+  @ Override final int compare(final PVector a, final PVector b) {
+    int cmp;
+    return
+      (cmp = Float.compare(a.x, b.x)) != 0? cmp :
+      (cmp = Float.compare(a.y, b.y)) != 0? cmp :
+      Float.compare(a.z, b.z);
+  }
+};
