@@ -7,6 +7,9 @@ const options = {
   restart: function () {
     gfx.reset();
     gfx.background(options.background);
+  },
+  save: function () {
+    saveCanvas('LogarithmicSpiral_' + Date.now(), 'png');
   }
 }
 
@@ -17,6 +20,7 @@ gui.remember(options);
 folder1.addColor(options, 'background');
 folder1.addColor(options, 'foreground');
 gui.add(options, 'restart');
+gui.add(options, 'save');
 
 function setup() {
   createCanvas(xSize, ySize);
