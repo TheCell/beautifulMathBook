@@ -8,6 +8,7 @@ const options = {
   background: '#d4d4d4',
   foreground: '#282828',
   restart: function () {
+    system.reset();
     gfx.reset();
     gfx.background(options.background);
   },
@@ -58,10 +59,14 @@ ParticleSystem.prototype.addParticle = function() {
 
 ParticleSystem.prototype.run = function() {
   for (let i = this.particles.length-1; i >= 0; i--) {
-    let p = this.particles[i];
-    p.run();
-    if (p.isDead()) {
-      this.particles.splice(i, 1);
-    }
+      let p = this.particles[i];
+      p.run();
+      if (p.isDead()) {
+          this.particles.splice(i, 1);
+      }
   }
 };
+
+ParticleSystem.prototype.reset = function() {
+  this.particles = [];
+}
