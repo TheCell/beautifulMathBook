@@ -1,11 +1,29 @@
+let gfx;
+const xSize = 400;
+const ySize = 400;
+const options = {
+  background: '#212121',
+  foreground: '#ffae23',
+  restart: function () {
+    gfx.reset();
+    gfx.background(options.background);
+  }
+}
+
 // Creating a GUI with options.
 var gui = new dat.GUI({name: 'Customization'});
 var folder1 = gui.addFolder('Setup options');
+gui.remember(options);
+folder1.addColor(options, 'background');
+folder1.addColor(options, 'foreground');
+gui.add(options, 'restart');
 
 function setup() {
-  // put setup code here
+  createCanvas(xSize, ySize);
+  gfx = createGraphics(xSize, ySize)
+  gfx.background(options.background);
 }
 
 function draw() {
-  // put drawing code here
+  image(gfx, 0, 0);
 }
