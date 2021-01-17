@@ -26,6 +26,7 @@ function setup() {
   createCanvas(xSize, ySize);
   gfx = createGraphics(xSize, ySize)
   gfx.background(options.background);
+  options.restart();
 }
 
 function draw() {
