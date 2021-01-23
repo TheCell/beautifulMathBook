@@ -1,6 +1,13 @@
 let gfx;
-const xSize = 400;
-const ySize = 400;
+const startupParameters = {
+  xSize: 400,
+  ySize: 400,
+  resizeCanvas: function() {
+    createCanvas(startupParameters.xSize, startupParameters.ySize);
+    gfx = createGraphics(startupParameters.xSize, startupParameters.ySize)
+    gfx.background(options.background);
+  }
+}
 const options = {
   background: '#212121',
   foreground: '#ffae23',
@@ -15,6 +22,11 @@ const options = {
 
 // Creating a GUI with options.
 var gui = new dat.GUI({name: 'Customization'});
+var startupParameterFolder = gui.addFolder('canvas options');
+gui.remember(startupParameters);
+startupParameterFolder.add(startupParameters, 'xSize', 400);
+startupParameterFolder.add(startupParameters, 'ySize', 400);
+startupParameterFolder.add(startupParameters, 'resizeCanvas');
 var folder1 = gui.addFolder('Setup options');
 gui.remember(options);
 folder1.addColor(options, 'background');
@@ -24,9 +36,7 @@ gui.add(options, 'restart');
 gui.add(options, 'save');
 
 function setup() {
-  createCanvas(xSize, ySize);
-  gfx = createGraphics(xSize, ySize)
-  gfx.background(options.background);
+  startupParameters.resizeCanvas();
   options.restart();
 }
 
