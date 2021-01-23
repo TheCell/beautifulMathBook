@@ -18,7 +18,7 @@ const options = {
     drawSquares(xSize / 2, ySize / 2, options.startsize, gfx);
   },
   save: function () {
-    saveCanvas('Genuary23_1_' + Date.now(), 'png');
+    saveCanvas('Genuary23_2_' + Date.now(), 'png');
   }
 }
 
@@ -55,19 +55,17 @@ function draw() {
 }
 
 function drawSquares(middleX, middleY, startsize, gfx) {
-  const middlePointX = middleX - startsize / 2;
-  const middlePointY = middleY - startsize / 2;
   let currentHalfSize = startsize / 2;
   let rotation = PI / options.rotationDivider;
   const colors = [options.c1, options.c2, options.c3, options.c4, options.c5];
   gfx.push();
-  gfx.translate(middlePointX, middlePointY);
+  gfx.translate(middleX, middleY);
   gfx.noFill();
   for (let i = 0; i < options.squareCountPerCall; i++) {
-    currentHalfSize = currentHalfSize * 0.9;
     gfx.stroke(random(colors));
-    gfx.square(-currentHalfSize, -currentHalfSize, startsize);
+    gfx.square(-currentHalfSize, -currentHalfSize, currentHalfSize * 2);
     gfx.rotate(rotation);
+    currentHalfSize = currentHalfSize * 0.9;
   }
   gfx.pop();
 }
