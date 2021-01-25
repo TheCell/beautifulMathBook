@@ -1,7 +1,7 @@
 let gfx;
 const startupParameters = {
-  xSize: 400,
-  ySize: 400,
+  xSize: 600,
+  ySize: 600,
   resizeCanvas: function() {
     createCanvas(startupParameters.xSize, startupParameters.ySize);
     gfx = createGraphics(startupParameters.xSize, startupParameters.ySize)
@@ -24,8 +24,8 @@ const options = {
 var gui = new dat.GUI({name: 'Customization'});
 var startupParameterFolder = gui.addFolder('canvas options');
 gui.remember(startupParameters);
-startupParameterFolder.add(startupParameters, 'xSize', 400);
-startupParameterFolder.add(startupParameters, 'ySize', 400);
+startupParameterFolder.add(startupParameters, 'xSize', 200);
+startupParameterFolder.add(startupParameters, 'ySize', 200);
 startupParameterFolder.add(startupParameters, 'resizeCanvas');
 var folder1 = gui.addFolder('Setup options');
 gui.remember(options);
