@@ -2,14 +2,14 @@ let gfx;
 const xSize = 100;
 const ySize = 100;
 const CARules = {
-  r111: false,
+  r111: true,
   r110: false,
   r101: true,
   r100: true,
-  r011: true,
+  r011: false,
   r010: true,
-  r001: false,
-  r000: false,
+  r001: true,
+  r000: true,
   background: '#1a9bc6',
   foreground: '#84e3f9',
   randomStart: true,
