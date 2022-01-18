@@ -21,8 +21,8 @@ const options = {
   autiodraw: false,
   redraw: function () {
     gfx.reset();
-    // randomSeed(Math.random() * 100000);
-    randomSeed(100000);
+    randomSeed(Math.random() * 100000);
+    // randomSeed(100000);
     gfx.strokeWeight(options.borderSize);
     gfx.stroke(0);
     gfx.background(options.background);
