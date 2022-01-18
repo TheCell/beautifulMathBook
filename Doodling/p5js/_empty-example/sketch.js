@@ -1,4 +1,5 @@
-let gfx;
+let gfx, seed;
+
 const startupParameters = {
   xSize: 600,
   ySize: 600,
@@ -12,11 +13,13 @@ const options = {
   background: '#212121',
   foreground: '#ffae23',
   restart: function () {
+    seed = Math.random() * 100000;
+    randomSeed(seed);
     gfx.reset();
     gfx.background(options.background);
   },
   save: function () {
-    saveCanvas('Example_' + Date.now(), 'png');
+    saveCanvas('Example_seed-' + seed + '_date-' + Date.now(), 'png');
   }
 }
 
