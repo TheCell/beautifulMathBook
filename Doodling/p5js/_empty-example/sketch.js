@@ -9,6 +9,7 @@ const startupParameters = {
     gfx.background(options.background);
   }
 }
+
 const options = {
   background: '#212121',
   foreground: '#ffae23',
@@ -20,6 +21,9 @@ const options = {
   },
   save: function () {
     saveCanvas('Example_seed-' + seed + '_date-' + Date.now(), 'png');
+  },
+  loadImage: function() {
+    document.getElementById('fileselector').click();
   }
 }
 
@@ -32,6 +36,7 @@ startupParameterFolder.add(startupParameters, 'ySize', 200);
 startupParameterFolder.add(startupParameters, 'resizeCanvas');
 var folder1 = gui.addFolder('Setup options');
 gui.remember(options);
+folder1.add(options, 'loadImage');
 folder1.addColor(options, 'background');
 folder1.addColor(options, 'foreground');
 folder1.open();
@@ -45,4 +50,17 @@ function setup() {
 
 function draw() {
   image(gfx, 0, 0);
+}
+
+function onFileSelected() {
+  const input = document.getElementById('fileselector');
+  const files = input.files;
+  for (const file of files) {
+    loadImage(URL.createObjectURL(file), onImageLoaded);
+  };
+}
+
+function onImageLoaded(image) {
+  // now do stuff
+  gfx.image(image, 0, 0);
 }
