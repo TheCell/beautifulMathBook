@@ -1,0 +1,158 @@
+<html>
+<head>
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/p5.min.js"></script>
+<script type="text/javascript" src="https://github.com/zenozeng/p5.js-svg/releases/download/v0.5.2/p5.svg.js"></script> -->
+<script type="text/javascript" src="../_libs/p5js_lib/p5.js"></script>
+<script type="text/javascript" src="../_libs/dat.gui-0.6.5/dat.gui.min.js"></script>
+<script type="text/javascript" src="../_libs/p5svg/p5.svg.js"></script>
+<!-- <script type="text/javascript" src="Particle.js"></script> -->
+<style>
+    .p5Canvas {
+        border: 1px solid black;
+    }
+</style>
+</head>
+<body>
+    <script>
+        let points = [];
+
+        let sketch = function (p) {
+            p.setup = function () {
+                this.lifespan = 0;
+                this.points = [];
+                this.refPoint = p.createVector(0, 0);
+                // p.angleMode(p.DEGREES);
+                p.createCanvas(600, 600, p.SVG);
+                p.strokeWeight(2);
+                p.stroke(0, 0, 0);
+                // if (p.type === "SVG") {
+                // } else if (p.type === "NORMAL") {
+                //     p.createCanvas(400, 400);
+                // } else {
+                //     alert("don't know which canvas to create")
+                // }
+                // p.loop(); 
+            };
+
+            p.draw = function () {
+                p.updateParticle();
+                // p.background("white");
+                // p.fill(colors[idx]);
+                // p.stroke("black");
+                // p.strokeWeight(3);
+                // p.ellipse(200, 200, 200,200);
+
+                // p.fill("black");
+                // p.noStroke();
+
+                // p.textStyle(p.NORMAL);
+                // p.text("test", 100, 100);
+
+                // p.textStyle(p.BOLD);
+                // p.text("bold", 200, 200);
+
+                // waiting = false;
+                // p.clear();
+                // p.push();
+                // p.noFill();
+                // p.translate(this.refPoint.x, this.refPoint.y);
+                // console.log(this.refPoint.x, this.refPoint.y);
+                // p.beginShape(p.LINES);
+                p.clear();
+                // console.log(this.points.length);
+                for (let i = 1; i < this.points.length; i++) {
+                    // p.push();
+                    // p.translate(this.points[i]);
+                    // p.translate(this.refPoint.x, this.refPoint.y);
+                    // p.vertex(this.points[i - 1].x, this.points[i - 1].y);
+                    // p.vertex(this.points[i].x, this.points[i].y);
+                    // console.log(this.points[i - 1].x, this.points[i].x);
+                    // p.line(this.points[i - 1].x, this.points[i - 1].y, this.points[i].x, this.points[i].y);
+                    p.line(this.points[i - 1].x, this.points[i - 1].y, this.points[i].x, this.points[i].y);
+                    // p.point(this.points[i].x, this.points[i].y);
+                    // p.pop();
+                }
+                // p.endShape();
+                // p.pop();
+            };
+
+            p.mousePressed = function() {
+                // console.log('mousepressed');
+                // console.log(p.mouseX, p.mouseY);
+                if (p.mouseX >= 0 && p.mouseX <= p.width) {
+                    if (p.mouseY >= 0 && p.mouseY <= p.height) {
+                        p.clear();
+                        p.particle = p.newparticle();
+                    }
+                }
+                // if (p.dist(p.mouseX, p.mouseY, 200,200) < 100) {
+                //     idx++;
+                //     idx %= colors.length;
+                //     p.redraw();
+                // }
+            };
+
+            p.newparticle = function() {
+                // this.acceleration = createVector(0, 0.05);
+                this.velocity = p.createVector(p.random(-1, 1), p.random(-1, 1));
+                this.constK = p.random(.1, .1); // k != 0 how fast the circle straightens
+                this.constA = p.random(1, 5); // a > 0; how close to absolute center does it start
+                // this.constA = 1; // a > 0; how close to absolute center does it start
+                this.constRadiant = p.random(Math.PI / 20);
+                this.angleRadiant = p.random(Math.PI * 2);
+                this.position = p.createVector(0, 0);
+                this.previousPos = p.createVector(0, 0);
+
+                this.refPoint = p.createVector(p.width / 2, p.height / 2);
+                this.lifespan = p.random(50, 255);
+                this.points = [];
+                // this.points.push(this.refPoint);
+                // console.log(this.velocity, this.constK, this.constA, this.constRadiant, this.angleRadiant, this.position, this.previousPos, this.refPoint, this.lifespan);
+                // this.canvas = canvas;
+
+                // this.velocity = p.createVector(-0.09580691501856453, 0.2602959884200562);
+                // this.constK = 0.1;
+                // this.constA = 4.533362288371592;
+                // this.constRadiant = 0.09804196339934151;
+                // this.angleRadiant = 1.3643663366324899;
+                // this.position = p.createVector(0, 0);
+                // this.previousPos = p.createVector(0, 0);
+                // this.refPoint = p.createVector(182, 177);
+                // this.lifespan = 250.5381445722196;
+            }
+
+            p.save_canvas = function() {
+                console.log('save_canvas');
+                p.draw();
+                p.save();
+            }
+
+            p.updateParticle = function() {
+                if (this.lifespan > 0) {
+                    this.previousPos = this.position.copy();
+                    this.position.x = this.constA * Math.pow(Math.E, this.constK * this.angleRadiant) * Math.cos(this.angleRadiant);
+                    this.position.y = this.constA * Math.pow(Math.E, this.constK * this.angleRadiant) * Math.sin(this.angleRadiant);
+                    this.angleRadiant += this.constRadiant;
+                    this.refPoint.add(this.velocity);
+                    // console.log(this.refPoint);
+                    // console.log(this.refPoint);
+                    // console.log(p.random(-1, 1));
+                    // console.log(this.angleRadiant);
+                    // console.log(this.previousPos, this.position, this.position, this.angleRadiant, this.refPoint);
+                    this.lifespan -= 1;
+                    let absolutePos = this.position.copy();
+                    absolutePos.add(this.refPoint);
+                    // this.points.push(this.position);
+                    this.points.push(absolutePos);
+                }
+            }
+        };
+
+        svg = new p5(sketch, "svg-canvas");
+        svg.type = "SVG";
+    </script>
+
+    <div id="svg-canvas"></div>
+    <button onclick="svg.save_canvas()">Save SVG</button>
+</body>
+</html>
