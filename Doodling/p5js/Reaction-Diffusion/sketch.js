@@ -28,12 +28,12 @@ const startupParameters = {
 }
 
 const options = {
-  background: '#080f62',
-  foreground: '#56c6ff',
-  pixelamountX: 300,
-  pixelamountY: 300,
-  newPixelAmountX: 300,
-  newPixelAmountY: 300,
+  background: '#2b2d42',
+  foreground: '#ef233c',
+  pixelamountX: 200,
+  pixelamountY: 200,
+  newPixelAmountX: 200,
+  newPixelAmountY: 200,
   diffusionRateA: 1.0,
   diffusionRateB: 0.5,
   feedRate: 0.055,
@@ -97,11 +97,13 @@ gui.remember(options);
 gui.add(options, 'restart');
 gui.add(options, 'save');
 
+let thisBind;
 function setup() {
   startupParameters.resizeCanvas();
   startupParameters.resizeSimulation();
   options.restart();
   pixelDensity(1);
+  thisBind = this;
 }
 
 function draw() {
@@ -129,34 +131,15 @@ function onFileSelected() {
 }
 
 function onImageLoaded(image) {
-  console.log('Image loaded:', image);
-  const resizedImage = resizeImage(image);
-  console.log('Resized image:', resizedImage);
-  currentlyLoadedImage = resizedImage;
-  // now do stuff
-  // imagePlacer.clear();
-  // imagePlacer.image(image, 0, 0, options.pixelamountX, options.pixelamountY);
+  currentlyLoadedImage = image;
   options.useImageStencil = true;
-  // gfx.image(image, 0, 0, startupParameters.xSize, startupParameters.ySize);
   updateCurrentlyLoadedImage();
 }
 
 function updateCurrentlyLoadedImage() {
-  console.log('updateCurrentlyLoadedImage');
-  // this will be broken if canvas size is changed after image loading
-  
   imagePlacer = createGraphics(currentlyLoadedImage.width, currentlyLoadedImage.height);
   imagePlacer.image(currentlyLoadedImage, 0, 0, currentlyLoadedImage.width, currentlyLoadedImage.height);
   imagePlacer.filter(THRESHOLD, options.imageThreshold);
-}
-
-function resizeImage(img) {
-  if (img.width > options.pixelamountX || img.height > options.pixelamountY) {
-    // todo this is not working yet
-    return image(img, 0, 0, options.pixelamountX, options.pixelamountY, 0, 0, img.width, img.height, constrain);
-  }
-
-  return img;
 }
 
 function handleMousePressed() {
