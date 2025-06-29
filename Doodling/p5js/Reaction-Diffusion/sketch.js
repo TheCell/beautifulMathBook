@@ -1,4 +1,4 @@
-let gfx, seed;
+let gfx, seed, imagePlacer;
 let grid = [];
 let nextGrid = [];
 
@@ -12,14 +12,15 @@ const startupParameters = {
     options.pixelamountX = options.newPixelAmountX;
     options.pixelamountY = options.newPixelAmountY;
     gfx = createGraphics(options.pixelamountX, options.pixelamountY);
+    imagePlacer = createGraphics(options.pixelamountX, options.pixelamountY);
     gfx.background(options.background);
     options.restart();
   }
 }
 
 const options = {
-  background: '#35483d',
-  foreground: '#cde187',
+  background: '#080f62',
+  foreground: '#56c6ff',
   pixelamountX: 300,
   pixelamountY: 300,
   newPixelAmountX: 300,
@@ -31,6 +32,8 @@ const options = {
   influence: [0.05, 0.2, 0.05, 0.2, -1, 0.2, 0.05, 0.2, 0.05],
   timeMultiplier: 1.0,
   brushSize: 20,
+  isSimulationRunning: true,
+  useImageStencil: false,
   restart: function () {
     seed = Math.random() * 100000;
     reset();
@@ -54,10 +57,12 @@ startupParameterFolder.add(startupParameters, 'xSize', 200);
 startupParameterFolder.add(startupParameters, 'ySize', 200);
 startupParameterFolder.add(startupParameters, 'resizeCanvas');
 let folder1 = gui.addFolder('Setup options');
-folder1.add(options, 'loadImage');
 folder1.addColor(options, 'background');
 folder1.addColor(options, 'foreground');
 folder1.add(options, 'brushSize').step(1).min(1);
+folder1.add(options, 'isSimulationRunning');
+folder1.add(options, 'loadImage');
+folder1.add(options, 'useImageStencil').listen();
 folder1.open();
 
 let folder2 = gui.addFolder('simulation options');
@@ -85,8 +90,11 @@ function setup() {
 
 function draw() {
   background(options.background);
-  generateNextFrame();
-  swapGrid();
+  handleMousePressed();
+  if (options.isSimulationRunning) {
+    generateNextFrame();
+    swapGrid();
+  }
   drawGrid();
   image(gfx, 0, 0, startupParameters.xSize, startupParameters.ySize);
 }
@@ -100,8 +108,36 @@ function onFileSelected() {
 }
 
 function onImageLoaded(image) {
+  console.log('Image loaded:', image);
+  const resizedImage = resizeImage(image);
+  console.log('Resized image:', resizedImage);
   // now do stuff
-  gfx.image(image, 0, 0, startupParameters.xSize, startupParameters.ySize);
+  // imagePlacer.clear();
+  // imagePlacer.image(image, 0, 0, options.pixelamountX, options.pixelamountY);
+  options.useImageStencil = true;
+  // gfx.image(image, 0, 0, startupParameters.xSize, startupParameters.ySize);
+}
+
+function resizeImage(img) {
+  if (img.width > options.pixelamountX || img.height > options.pixelamountY) {
+    return image(img, 0, 0, options.pixelamountX, options.pixelamountY, 0, 0, img.width, img.height, constrain);
+  }
+
+  return img;
+}
+
+function handleMousePressed() {
+  if (mouseIsPressed) {
+    addDrops(mouseX, mouseY);
+  }
+}
+
+function mousePressed() {
+  options.isSimulationRunning = false;
+}
+
+function mouseReleased() {
+  options.isSimulationRunning = true;
 }
 
 function mouseClicked() {
@@ -139,7 +175,7 @@ const currentTime = millis();
       gfx.pixels[pixelIndex + 0] = floor(redColor);
       gfx.pixels[pixelIndex + 1] = floor(greenColor);
       gfx.pixels[pixelIndex + 2] = floor(blueColor);
-      gfx.pixels[pixelIndex + 3] = 255 * grid[x][y].a;
+      gfx.pixels[pixelIndex + 3] = 255 * grid[x][y].b;
     }
   }
 
