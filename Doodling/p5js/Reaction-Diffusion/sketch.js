@@ -213,14 +213,14 @@ function drawGrid() {
   const redColor = red(drawColor);
   const greenColor = green(drawColor);
   const blueColor = blue(drawColor);
-    
+  
   for (let x = 0; x < options.pixelamountX; x++) {
     for (let y = 0; y < options.pixelamountY; y++) {
       const pixelIndex = (x + y * options.pixelamountX) * 4;
       gfx.pixels[pixelIndex + 0] = floor(redColor);
       gfx.pixels[pixelIndex + 1] = floor(greenColor);
       gfx.pixels[pixelIndex + 2] = floor(blueColor);
-      gfx.pixels[pixelIndex + 3] = 255 * grid[x][y].b;
+      gfx.pixels[pixelIndex + 3] = 500 * grid[x][y].b;
     }
   }
 
