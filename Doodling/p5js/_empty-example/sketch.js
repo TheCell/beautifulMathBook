@@ -28,13 +28,13 @@ const options = {
 }
 
 // Creating a GUI with options.
-var gui = new dat.GUI({name: 'Customization'});
-var startupParameterFolder = gui.addFolder('canvas options');
+let gui = new dat.GUI({name: 'Customization'});
+let startupParameterFolder = gui.addFolder('canvas options');
 gui.remember(startupParameters);
 startupParameterFolder.add(startupParameters, 'xSize', 200);
 startupParameterFolder.add(startupParameters, 'ySize', 200);
 startupParameterFolder.add(startupParameters, 'resizeCanvas');
-var folder1 = gui.addFolder('Setup options');
+let folder1 = gui.addFolder('Setup options');
 gui.remember(options);
 folder1.add(options, 'loadImage');
 folder1.addColor(options, 'background');
