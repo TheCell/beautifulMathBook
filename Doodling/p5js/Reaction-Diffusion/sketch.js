@@ -1,12 +1,21 @@
 let gfx, seed, imagePlacer;
 let grid = [];
 let nextGrid = [];
+let currentlyLoadedImage;
+let simulationToCanvasRatioX, simulationToCanvasRatioY;
 
 const startupParameters = {
   xSize: 600,
   ySize: 600,
   resizeCanvas: function() {
-    createCanvas(startupParameters.xSize, startupParameters.ySize);
+    let canvas = createCanvas(startupParameters.xSize, startupParameters.ySize);
+    canvas.mousePressed(() => {
+      options.isSimulationRunning = false;
+    });
+
+    canvas.mouseReleased(() => {
+      options.isSimulationRunning = true;
+    });
   },
   resizeSimulation: function() {
     options.pixelamountX = options.newPixelAmountX;
@@ -33,6 +42,8 @@ const options = {
   timeMultiplier: 1.0,
   brushSize: 20,
   isSimulationRunning: true,
+  additive: true,
+  imageThreshold: 0.5,
   useImageStencil: false,
   restart: function () {
     seed = Math.random() * 100000;
@@ -60,8 +71,10 @@ let folder1 = gui.addFolder('Setup options');
 folder1.addColor(options, 'background');
 folder1.addColor(options, 'foreground');
 folder1.add(options, 'brushSize').step(1).min(1);
-folder1.add(options, 'isSimulationRunning');
+folder1.add(options, 'isSimulationRunning').listen();
+folder1.add(options, 'additive').listen();
 folder1.add(options, 'loadImage');
+folder1.add(options, 'imageThreshold').onChange(updateCurrentlyLoadedImage);
 folder1.add(options, 'useImageStencil').listen();
 folder1.open();
 
@@ -69,6 +82,9 @@ let folder2 = gui.addFolder('simulation options');
 // folder2.add(options, 'timeMultiplier').step(0.01).min(0.01);
 folder2.add(options, 'diffusionRateA').step(0.001).min(0.001).max(1.0);
 folder2.add(options, 'diffusionRateB').step(0.001).min(0.001).max(1.0);
+for (let i = 0; i < options.influence.length; i++) {
+  folder2.add(options.influence, i).step(0.001).min(0.001).max(1.0).name(`influence ${i + 1}`);
+}
 folder2.add(options, 'feedRate').step(0.001).min(0.001).max(0.1);
 folder2.add(options, 'killRate').step(0.001).min(0.001).max(0.1);
 
@@ -97,6 +113,11 @@ function draw() {
   }
   drawGrid();
   image(gfx, 0, 0, startupParameters.xSize, startupParameters.ySize);
+
+  if (options.useImageStencil) {
+    simulationToCanvasRatioX
+    image(imagePlacer, mouseX, mouseY, imagePlacer.width / simulationToCanvasRatioX, imagePlacer.height / simulationToCanvasRatioY);
+  }
 }
 
 function onFileSelected() {
@@ -111,15 +132,27 @@ function onImageLoaded(image) {
   console.log('Image loaded:', image);
   const resizedImage = resizeImage(image);
   console.log('Resized image:', resizedImage);
+  currentlyLoadedImage = resizedImage;
   // now do stuff
   // imagePlacer.clear();
   // imagePlacer.image(image, 0, 0, options.pixelamountX, options.pixelamountY);
   options.useImageStencil = true;
   // gfx.image(image, 0, 0, startupParameters.xSize, startupParameters.ySize);
+  updateCurrentlyLoadedImage();
+}
+
+function updateCurrentlyLoadedImage() {
+  console.log('updateCurrentlyLoadedImage');
+  // this will be broken if canvas size is changed after image loading
+  
+  imagePlacer = createGraphics(currentlyLoadedImage.width, currentlyLoadedImage.height);
+  imagePlacer.image(currentlyLoadedImage, 0, 0, currentlyLoadedImage.width, currentlyLoadedImage.height);
+  imagePlacer.filter(THRESHOLD, options.imageThreshold);
 }
 
 function resizeImage(img) {
   if (img.width > options.pixelamountX || img.height > options.pixelamountY) {
+    // todo this is not working yet
     return image(img, 0, 0, options.pixelamountX, options.pixelamountY, 0, 0, img.width, img.height, constrain);
   }
 
@@ -128,42 +161,71 @@ function resizeImage(img) {
 
 function handleMousePressed() {
   if (mouseIsPressed) {
+    drawAtMousePosition();
+  }
+}
+
+function mouseClicked() {
+  drawAtMousePosition();
+}
+
+function drawAtMousePosition() {
+  if (options.useImageStencil) {
+    addImage();
+  }
+  else {
     addDrops(mouseX, mouseY);
   }
 }
 
-function mousePressed() {
-  options.isSimulationRunning = false;
-}
-
-function mouseReleased() {
-  options.isSimulationRunning = true;
-}
-
-function mouseClicked() {
-  addDrops(mouseX, mouseY);
-}
-
 function addDrops(x, y) {
-  const canvasToSimulationRatioX = options.pixelamountX / startupParameters.xSize;
-  const canvasToSimulationRatioY = options.pixelamountY / startupParameters.ySize;
-  
-  const mouseXMin = Math.floor(x * canvasToSimulationRatioX) - Math.floor(options.brushSize / 2);
-  const mouseYMin = Math.floor(y * canvasToSimulationRatioY) - Math.floor(options.brushSize / 2);
+  const mouseXMin = Math.floor(x * simulationToCanvasRatioX) - Math.floor(options.brushSize / 2);
+  const mouseYMin = Math.floor(y * simulationToCanvasRatioY) - Math.floor(options.brushSize / 2);
 
   for (let x = mouseXMin; x < mouseXMin + Math.floor(options.brushSize); x++) {
     for (let y = mouseYMin; y < mouseYMin + Math.floor(options.brushSize); y++) {
       if (x >= 0 && x < options.pixelamountX && y >= 0 && y < options.pixelamountY) {
-        grid[x][y].b = 1;
+        if (options.additive) {
+          grid[x][y].b = 1;
+          grid[x][y].a = 0;
+        } else {
+          grid[x][y].b = 0;
+          grid[x][y].a = 1;
+        }
+      }
+    }
+  }
+}
+
+function addImage() {
+  const scaledMouseX = Math.floor(mouseX * simulationToCanvasRatioX);
+  const scaledMouseY = Math.floor(mouseY * simulationToCanvasRatioY);
+  
+  imagePlacer.loadPixels();
+  for (let x = 0; x < options.pixelamountX; x++) {
+    for (let y = 0; y < options.pixelamountY; y++) {
+      if (x >= scaledMouseX && x < scaledMouseX + imagePlacer.width) {
+        if (y >= scaledMouseY && y < scaledMouseY + imagePlacer.height) {
+          const imagePixelIndex = (x - scaledMouseX + (y - scaledMouseY) * imagePlacer.width) * 4;
+          const isBlack = imagePlacer.pixels[imagePixelIndex] < 128;
+        
+          if (options.additive) {
+            grid[x][y].b = isBlack ? 1 : 0;
+            grid[x][y].a = isBlack ? 0 : 1;
+          } else {
+            grid[x][y].b = isBlack ? 0 : 1;
+            grid[x][y].a = isBlack ? 1 : 0;
+          }
+        }
       }
     }
   }
 }
 
 function drawGrid() {
-const currentTime = millis();
-
+  // const currentTime = millis();
   gfx.loadPixels();
+  
   const drawColor = color(options.foreground);
   const redColor = red(drawColor);
   const greenColor = green(drawColor);
@@ -250,4 +312,6 @@ function reset() {
     }
   }
 
+  simulationToCanvasRatioX = (options.pixelamountX / startupParameters.xSize);
+  simulationToCanvasRatioY = (options.pixelamountY / startupParameters.ySize);
 }
