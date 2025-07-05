@@ -43,15 +43,15 @@ const options = {
 var gui = new dat.GUI({name: 'Customization'});
 var startupParameterFolder = gui.addFolder('canvas options');
 gui.remember(startupParameters);
-startupParameterFolder.add(startupParameters, 'xSize', 200);
-startupParameterFolder.add(startupParameters, 'ySize', 200);
+startupParameterFolder.add(startupParameters, 'xSize', 10);
+startupParameterFolder.add(startupParameters, 'ySize', 10);
 startupParameterFolder.add(startupParameters, 'resizeCanvas');
 var folder1 = gui.addFolder('Setup options');
 gui.remember(options);
 folder1.addColor(options, 'background');
 folder1.addColor(options, 'foreground');
 folder1.add(options, 'drawLinesPerFrame', 1, startupParameters.ySize, 1);
-folder1.add(options, 'ModuleNumber').step(1).min(1);
+folder1.add(options, 'ModuleNumber').step(1).min(1).onChange(function() { options.restart(); });
 folder1.open();
 var folder2 = gui.addFolder('Operations');
 folder2.add(operations, 'AND').listen().onChange(function() { setChecked('AND') });
