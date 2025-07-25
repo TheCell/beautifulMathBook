@@ -3,6 +3,7 @@ let grid = [];
 let nextGrid = [];
 let currentlyLoadedImage;
 let simulationToCanvasRatioX, simulationToCanvasRatioY;
+window.devicePixelRatio = 1;
 
 const startupParameters = {
   xSize: 600,
@@ -14,6 +15,14 @@ const startupParameters = {
     });
 
     canvas.mouseReleased(() => {
+      options.isSimulationRunning = true;
+    });
+
+    canvas.touchStarted(() => {
+      options.isSimulationRunning = false;
+    });
+
+    canvas.touchEnded(() => {
       options.isSimulationRunning = true;
     });
   },
@@ -158,6 +167,25 @@ function drawAtMousePosition() {
   }
   else {
     addDrops(mouseX, mouseY);
+  }
+}
+
+function touchStarted() {
+  drawAtMousePosition();
+}
+
+function touchMoved() {
+  drawAtTouchPosition();
+}
+
+function drawAtTouchPosition() {
+  if (options.useImageStencil) {
+    addImage();
+  }
+  else {
+    for (let touch of touches) {
+      addDrops(touch.x, touch.y);
+    }
   }
 }
 
