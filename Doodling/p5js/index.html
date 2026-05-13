@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P5js Examples</title>
+</head>
+<body>
+    <h1>P5js Examples</h1>
+    <ul id="examples"></ul>
+    <script type="module">
+        const sketches = import.meta.glob('./**/sketch.{js,ts}');
+        const ul = document.getElementById('examples');
+        for (const path of Object.keys(sketches).sort()) {
+            const folder = path.slice(2, path.lastIndexOf('/'));
+            if (folder.startsWith('_') || folder.includes('/')) continue;
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = `${folder}/index.html`;
+            a.textContent = folder;
+            li.appendChild(a);
+            ul.appendChild(li);
+        }
+    </script>
+</body>
+</html>

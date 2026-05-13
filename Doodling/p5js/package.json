@@ -1,5 +1,14 @@
 {
-  "dependencies": {
+  "scripts": {
+    "dev": "vite typescript-example",
+    "build": "vite build typescript-example"
+  },
+  "devDependencies": {
     "vite": "^8.0.12"
+  },
+  "dependencies": {
+    "@types/p5": "^1.7.7",
+    "lil-gui": "^0.21.0",
+    "p5": "^2.2.3"
   }
 }
