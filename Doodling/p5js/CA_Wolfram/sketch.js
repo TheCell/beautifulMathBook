@@ -96,7 +96,7 @@ function drawArr(arr, y)
   {
     if (arr[i] == 1)
     {
-      gfx.stroke(0, 0, 0);
+      gfx.stroke(options.background);
       gfx.point(i, y);
     } else {
       gfx.stroke(options.foreground);
