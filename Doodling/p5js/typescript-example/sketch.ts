@@ -46,7 +46,6 @@ new p5((p: p5) => {
   gui.add(options, 'save');
 
   p.setup = function (): void {
-    console.log('test');
     startupParameters.resizeCanvas();
     options.restart();
   };
