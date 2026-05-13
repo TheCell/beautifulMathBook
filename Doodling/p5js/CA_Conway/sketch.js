@@ -12,21 +12,16 @@ const startupParameters = {
 
     for (let i = 0; i < lineArray.length; i++)
     {
-      lineArray[i] = 0;
-      if (i == lineArray.length / 2)
-      {
-        lineArray[i] = 1;
-      }
+      lineArray[i] = random() > 0.5 ? 1 : 0;
     }
   }
 }
 
-let lineArray = new Array(startupParameters.xSize);
-let lineFeed = 0;
+let lineArray = new Array(startupParameters.xSize * startupParameters.ySize);
 
 const options = {
   background: '#212121',
-  foreground: '#ffae23',
+  foreground: '#7a746a',
   restart: function () {
     seed = Math.random() * 100000;
     randomSeed(seed);
@@ -63,43 +58,26 @@ function setup() {
 }
 
 function draw() {
-  let atBottom = false;
-
-  if (atBottom || lineFeed >= startupParameters.ySize)
-  {
-    atBottom = true;
-    gfx.loadPixels();
-    for (let i = 0; i < (startupParameters.ySize-1)*startupParameters.xSize*4; i++)
-    {
-      gfx.pixels[i] = gfx.pixels[i+startupParameters.xSize*4];
-    }
-    gfx.updatePixels();
-  }
-
-  if (!atBottom)
-  {
-    drawArr(lineArray, lineFeed);
-    lineFeed++;
-    nextEvolution(lineArray);
-  } else {
-    drawArr(lineArray, startupParameters.ySize - 1);
-    nextEvolution(lineArray);
-  }
+  drawArr(lineArray);
+  nextEvolution(lineArray);
 
   image(gfx, 0, 0);
 }
 
-function drawArr(arr, y)
+
+function drawArr(arr)
 {
   for (let i = 0; i < arr.length; i++)
   {
+    let x = i % startupParameters.xSize;
+    let y = Math.floor(i / startupParameters.xSize);
     if (arr[i] == 1)
     {
       gfx.stroke(options.background);
-      gfx.point(i, y);
+      gfx.point(x, y);
     } else {
       gfx.stroke(options.foreground);
-      gfx.point(i, y);
+      gfx.point(x, y);
     }
   }
 }
@@ -110,51 +88,59 @@ function nextEvolution(arr)
 
   for (let i = 0; i < arr.length; i++)
   {
-    if (i == 0)
-    {
-      tempArray[i] = ruleprocess(arr[arr.length-1], arr[i], arr[i+1]);
-    } else if (i == arr.length -1) {
-      tempArray[i] = ruleprocess(arr[i-1], arr[i], arr[0]);
-    } else {
-      tempArray[i] = ruleprocess(arr[i-1], arr[i], arr[i+1]);
-    }
+    const amountOfNeighbours = countNeighbours(arr, i);
+    tempArray[i] = ruleprocess(arr[i], amountOfNeighbours);
   }
 
   lineArray = tempArray;
 }
 
-// Rule 90
-function ruleprocess(one, two, three)
+function ruleprocess(cell, amountOfLiveNeighbours)
 {
-  let answer = 0;
+  if (cell == 1) {
+    if (amountOfLiveNeighbours < 2) {
+      return 0;
+    } else if (amountOfLiveNeighbours < 4) {
+      return 1;
+    } else {
+      return 0;
+    }
+  } else {
+    if (amountOfLiveNeighbours == 3) {
+      return 1;
+    }
 
-  if (one == 0 && two == 0 && three == 0)
-  {
-    answer = 0;
-  } else if (one == 0 && two == 0 && three == 1)
-  {
-    answer = 1;
-  } else if (one == 0 && two == 1 && three == 0)
-  {
-    answer = 1;
-  } else if (one == 1 && two == 0 && three == 0)
-  {
-    answer = 1;
-  } else if (one == 0 && two == 1 && three == 1)
-  {
-    answer = 1;
-  } else if (one == 1 && two == 0 && three == 1)
-  {
-    answer = 0;
-  } else if (one == 1 && two == 1 && three == 0)
-  {
-    answer = 0;
-  } else if (one == 1 && two == 1 && three == 1)
-  {
-    answer = 0;
+    return 0;
   }
+}
 
-  return answer;
+function countNeighbours(arr, i) {
+    let x = i % startupParameters.xSize;
+    let y = Math.floor(i / startupParameters.xSize);
+
+    const isTopBorder = y == 0;
+    const isBottomBorder = y == startupParameters.ySize - 1;
+    const isLeftBorder = x == 0;
+    const isRightBorder = x == startupParameters.xSize - 1;
+
+    let amountOfLiveNeighbours = 0;
+
+    if (!isTopBorder && !isBottomBorder && !isLeftBorder && !isRightBorder) {
+      // left right up down
+      amountOfLiveNeighbours += arr[i - 1];
+      amountOfLiveNeighbours += arr[i + 1];
+      amountOfLiveNeighbours += arr[i - startupParameters.xSize];
+      amountOfLiveNeighbours += arr[i + startupParameters.xSize];
+
+      // diagonals
+      amountOfLiveNeighbours += arr[i - startupParameters.xSize - 1];
+      amountOfLiveNeighbours += arr[i - startupParameters.xSize + 1];
+      amountOfLiveNeighbours += arr[i + startupParameters.xSize - 1];
+      amountOfLiveNeighbours += arr[i + startupParameters.xSize + 1];
+      return amountOfLiveNeighbours;
+    }
+
+    return 0;
 }
 
 function onFileSelected() {
