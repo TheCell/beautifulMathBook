@@ -8,5 +8,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["typescript-example"]
+  "include": ["_typescript-example"]
 }
